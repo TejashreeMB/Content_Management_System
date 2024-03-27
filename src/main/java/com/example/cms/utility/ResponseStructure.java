@@ -24,7 +24,7 @@ public class ResponseStructure<T> {
 	public T getData() {
 		return data;
 	}
-	public ResponseStructure setData(T data) {
+	public ResponseStructure<T> setData(T data) {
 		this.data = data;
 		return this;
 	}

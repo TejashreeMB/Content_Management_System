@@ -1,13 +1,12 @@
 package com.example.cms.serviceImpl;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.cms.exception.UserAlreadyExistByEmailException;
+import com.example.cms.exception.UserNotFoundByIdException;
 import com.example.cms.model.User;
 import com.example.cms.repository.UserRepository;
 import com.example.cms.requestdto.UserRequest;
@@ -19,9 +18,9 @@ import com.example.cms.utility.ResponseStructure;
 public class UserServiceImpl implements UserService {
 	private UserRepository userRepo;
 	private PasswordEncoder passwordEncoder;
-	
+
 	private ResponseStructure<UserResponse> responseStructure;
-	
+
 
 	public UserServiceImpl(UserRepository userRepo, PasswordEncoder passwordEncoder,
 			ResponseStructure<UserResponse> responseStructure) {
@@ -42,8 +41,8 @@ public class UserServiceImpl implements UserService {
 				.setMessage("User registered successfully")
 				.setData(mapToUserResponse(uniqueUser)));	
 	}
-	
-	
+
+
 
 
 	private UserResponse mapToUserResponse(User user) {
@@ -53,6 +52,7 @@ public class UserServiceImpl implements UserService {
 		userResponse.setEmail(user.getEmail());
 		userResponse.setCreatedAt(user.getCreatedAt());
 		userResponse.setLastModifiedAt(user.getLastModifiedAt());
+		userResponse.setDeleted(user.isDeleted());
 		return userResponse;
 	}
 
@@ -61,7 +61,35 @@ public class UserServiceImpl implements UserService {
 		user.setUsername(userRequest.getUsername());
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+		user.setDeleted(false);
 		return user;
-		}
+	}
+
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> deleteUser(int userId) {
+		return userRepo.findById(userId)
+				.map(user -> {
+					user.setDeleted(true);
+					user = userRepo.save(user);
+					return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
+							.setMessage("User Deleted SuccessFully")
+							.setData(mapToUserResponse(user)));
+				}).orElseThrow(() -> new UserNotFoundByIdException("Invalid UserId"));
+		
+	}
+
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> findUniqueUser(int userId) {
+		return userRepo.findById(userId)
+				.map(user -> ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
+						.setMessage("User Fetched ")
+						.setData(mapToUserResponse(user))))
+				
+				.orElseThrow(()-> new UserNotFoundByIdException("Invalid UserId"));
+	}
 
 }

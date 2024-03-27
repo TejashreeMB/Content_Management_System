@@ -8,7 +8,14 @@ public class UserResponse {
 	private String email;
 	private LocalDateTime createdAt;
 	private LocalDateTime lastModifiedAt;
+	private boolean deleted;
 	
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 	public int getUserId() {
 		return userId;
 	}

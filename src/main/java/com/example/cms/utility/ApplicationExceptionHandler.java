@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.example.cms.exception.UserAlreadyExistByEmailException;
+import com.example.cms.exception.UserNotFoundByIdException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
@@ -30,6 +31,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	public ResponseEntity<ErrorStructure<String>> handleUserAlreadyByEmailException(UserAlreadyExistByEmailException ex)
 	{
 		return errorStructure(HttpStatus.BAD_REQUEST,ex.getMessage(),"User already exists with the given email ID");
+	}
+	
+	@ExceptionHandler(UserNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure<String>> handleUserNotFoundByIdException(UserNotFoundByIdException ex)
+	{
+		return errorStructure(HttpStatus.BAD_REQUEST, ex.getMessage(), "User does not exists with the given user ID");
 	}
 
 	private ResponseEntity<ErrorStructure<String>> errorStructure(HttpStatus status, String errorMessage,
@@ -52,6 +59,8 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 				.setErrorMessage("Invalid inputs")
 				.setRootCause(messages));
 	}
+	
+	
 }
 
 
