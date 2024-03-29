@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.example.cms.exception.BlogAlreadyExistsByTitleException;
 import com.example.cms.exception.UserAlreadyExistByEmailException;
 import com.example.cms.exception.UserNotFoundByIdException;
 
@@ -26,6 +27,15 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 		super();
 		this.structure = structureList;
 	}
+	
+	private ResponseEntity<ErrorStructure<String>> errorStructure(HttpStatus status, String errorMessage,
+			String rootCause) {
+
+			return new ResponseEntity<ErrorStructure<String>>(structure.setStatus(status.value())
+				.setErrorMessage(errorMessage)
+				.setRootCause(rootCause),HttpStatus.BAD_REQUEST);
+	}
+
 
 	@ExceptionHandler(UserAlreadyExistByEmailException.class)
 	public ResponseEntity<ErrorStructure<String>> handleUserAlreadyByEmailException(UserAlreadyExistByEmailException ex)
@@ -38,15 +48,15 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	{
 		return errorStructure(HttpStatus.BAD_REQUEST, ex.getMessage(), "User does not exists with the given user ID");
 	}
-
-	private ResponseEntity<ErrorStructure<String>> errorStructure(HttpStatus status, String errorMessage,
-			String rootCause) {
-
-			return new ResponseEntity<ErrorStructure<String>>(structure.setStatus(status.value())
-				.setErrorMessage(errorMessage)
-				.setRootCause(rootCause),HttpStatus.BAD_REQUEST);
+	
+	@ExceptionHandler(BlogAlreadyExistsByTitleException.class)
+	public ResponseEntity<ErrorStructure<String>> handleBlogAlreadyExistsByTitleException(BlogAlreadyExistsByTitleException ex)
+	{
+		return errorStructure(HttpStatus.BAD_REQUEST, ex.getMessage(), "Blog already exists with the given title");
 	}
 
+
+	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {

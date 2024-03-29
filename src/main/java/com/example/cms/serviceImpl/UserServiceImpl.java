@@ -79,9 +79,7 @@ public class UserServiceImpl implements UserService {
 				}).orElseThrow(() -> new UserNotFoundByIdException("Invalid UserId"));
 		
 	}
-
-
-
+ 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> findUniqueUser(int userId) {
 		return userRepo.findById(userId)

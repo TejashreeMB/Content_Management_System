@@ -55,5 +55,7 @@ public class UserController {
 	{
 		return userService.findUniqueUser(userId);
 	}
+	
+	
 
 }

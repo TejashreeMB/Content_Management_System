@@ -1,5 +1,7 @@
 package com.example.cms.utility;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,5 +30,5 @@ public class ErrorStructure<T> {
 		this.rootCause = rootCause;
 		return this;
 	}
-
+	
 }
